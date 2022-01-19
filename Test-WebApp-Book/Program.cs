@@ -23,7 +23,6 @@ namespace Test_WebApp_Book
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
               CreateHostBuilder(args).Build().Run();
-
             }
             finally
             {
