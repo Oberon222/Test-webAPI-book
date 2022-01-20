@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Test_WebApp_Book.Data.Models;
 using Test_WebApp_Book.Data.ViewModels;
 using Test_WebApp_Book.Services;
 
@@ -23,9 +19,12 @@ namespace Test_WebApp_Book.Controllers
     [HttpPost("add-book-with-authors")]
     public IActionResult AddBookWithAuthors([FromBody] BookVM book)
     {
-     _booksService.AddBookWithAuthors(book);
-
-      return Ok();
+      if (ModelState.IsValid)
+      {
+         _booksService.AddBookWithAuthors(book);
+        return Ok();
+      }
+      return BadRequest();     
     }
 
     [HttpGet("get-all-books")]
@@ -52,8 +51,12 @@ namespace Test_WebApp_Book.Controllers
     [HttpPut("update-book-by-id/{id}")]
     public IActionResult UpdateBookById(int id, [FromBody] BookVM bookVM)
     {
-      var _book = _booksService.UpdateBookById(id, bookVM);
-      return Ok(_book);
+      if (ModelState.IsValid)
+      {
+        var _book = _booksService.UpdateBookById(id, bookVM);
+        return Created(nameof(UpdateBookById), _book);
+      }
+      return BadRequest();      
     }
 
     [HttpDelete("delete-book-by-id/{id}")]
@@ -62,14 +65,12 @@ namespace Test_WebApp_Book.Controllers
       try
       {
         _booksService.DeleteBookById(id);
-        return Ok();
+        return NoContent();
       }
       catch (Exception ex)
       {
-
         return BadRequest(ex.Message);
-      }
-      
+      }      
     }
   }
 }

@@ -23,11 +23,11 @@ namespace Test_WebApp_Book.Controllers
     }
 
     [HttpGet("get-all-publicshers")]
-    public IActionResult GetAllPublishers(string sss)
+    public IActionResult GetAllPublishers()
     {
-      _logger.LogInformation($"sss {sss}");
+      _logger.LogInformation($"Test log: sss");
       var allPublishers = _publisherService.GetAllPublishers();
-      return Ok(allPublishers);
+      return Ok(allPublishers);      
     }
 
     [HttpGet("get-publisher-by-id/{id}")]
@@ -57,19 +57,27 @@ namespace Test_WebApp_Book.Controllers
         return NotFound();
       }
     }
-
+    // зробити валідацію через ModelState.IsValid ? --------------------------------------------
     [HttpPost("add-publisher")]
     public IActionResult AddPublisher([FromBody] PublisherVM publisherVM)
     {
-      var _publisher = _publisherService.AddPublisher(publisherVM);
-      return Created(nameof(AddPublisher), _publisher);
+      if (ModelState.IsValid)
+      {
+        var _publisher = _publisherService.AddPublisher(publisherVM);
+        return Created(nameof(AddPublisher), _publisher);
+      }
+      return BadRequest();      
     }
 
     [HttpPut("edit-publisher-by-id")]
     public IActionResult EditPublisherById(int id, [FromBody] PublisherVM publisherVM) 
     {
-      var updatePublisher = _publisherService.EditPublisherById(id, publisherVM);
-      return Created(nameof(EditPublisherById), updatePublisher);     
+      if (ModelState.IsValid)
+      {
+        var updatePublisher = _publisherService.EditPublisherById(id, publisherVM);
+        return Created(nameof(EditPublisherById), updatePublisher);
+      }
+      return BadRequest();        
     }
 
     [HttpDelete("delete-publisher-by-id/{id}")]
@@ -78,7 +86,7 @@ namespace Test_WebApp_Book.Controllers
       try
       {
         _publisherService.DeletePublisherById(id);
-        return Ok();
+        return NoContent();
       }
       catch (Exception ex)
       {

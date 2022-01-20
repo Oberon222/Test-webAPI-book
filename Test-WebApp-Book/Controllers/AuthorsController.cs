@@ -22,8 +22,12 @@ namespace Test_WebApp_Book.Controllers
     [HttpPost("add-author")]
     public IActionResult AddAuthor([FromBody] AuthorVM authorVM)
     {
-      var _author = _authorService.AddAuthor(authorVM);
-      return Created(nameof(AddAuthor), _author);
+      if (ModelState.IsValid)
+      {
+        var _author = _authorService.AddAuthor(authorVM);
+        return Created(nameof(AddAuthor), _author);
+      }
+      return BadRequest();     
     }
 
     [HttpGet("get-author-with-books/{id}")]
@@ -67,7 +71,7 @@ namespace Test_WebApp_Book.Controllers
       try
       {
         _authorService.DeleteAuthor(id);
-        return Ok();
+        return NoContent();
       }
       catch (Exception ex)
       {       
